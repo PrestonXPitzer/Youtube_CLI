@@ -6,14 +6,15 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
 #youtube-dl and supporters imports
 import os
-# os.system("pip install -U yt-dlp") #this will install youtube dl if it isn't already
-# os.system("pip install ")
+os.system("pip install -U -q -q -q yt-dlp") #this will install youtube dl if it isn't already
+os.system("pip install -U -q -q -q selenium") #the -q -q -q will supress any pip errors (path error)
+os.system("pip install -U -q -q -q audioread") 
 from yt_dlp import YoutubeDL
 from os import startfile
 #configure the webdriver
 chrome_options = Options() 
 chrome_options.add_argument("--headless") #this will make the browser headless (runs invisibly)
-chrome_options.add_argument("--quiet") #this will make the browser not print anything to the console (except for errors
+chrome_options.add_argument("--log-level=3") #log level 3 supresses all output to the console
 serviceObject = Service("chromedriver.exe") #required selenium thing
 driver = webdriver.Chrome(service=serviceObject, options=chrome_options) 
 #generic imports
@@ -24,10 +25,12 @@ import audioread
 ydl_opts_video = {
     'format': 'bestaudio/best',
     'quiet': True,
+    'sponsorblock': 'remove-sponsor/all'
 }
 ydl_opts_audio = {
     'format': 'm4a/bestaudio/best',
-    'quiet' : True
+    'quiet' : True,
+    'sponsorblock': 'remove-sponsor/all'
 }
 
 _first = True #this is a flag to check if it's the first time the menu is being displayed
@@ -53,9 +56,6 @@ def search():
     for p in range(len(titles)):
         titles_list.append(titles[p].text)
         href_list.append(titles[p].get_attribute("href"))
-        
-    #print like a million blank lines so the dumb shit error goes away
-    print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
     for i in range(len(titles_list)):
         print(str(i+1)+". "+titles_list[i])
     print("Enter a number to play the video, otherwise make any input to exit")
@@ -76,8 +76,11 @@ def music():
     for p in range(len(titles)):
         href_list.append(titles[p].get_attribute("href"))
     #play the first result that comes up from the query
-    playaudio(href_list[0])
-    print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
+    try:
+        playaudio(href_list[0])
+    except IndexError:
+        print("No results found")
+        main()
     main()
     
 
@@ -134,7 +137,7 @@ def playvideo(link):
         outfile = ydl.prepare_filename(ydl.extract_info(URLS[0], download=False))
         #remove the .webm extension and replace it with .mp4
     startfile(outfile)
-    input("press enter when you're done watching the video")
+    input("press enter when you're done watching the video (player must be closed)")
     os.remove(outfile)
     main()  
 
