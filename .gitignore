@@ -1,0 +1,11 @@
+/venv
+/music_library
+/vid_storage
+ffmpeg.exe
+ffplay.exe
+ffprobe.exe
+geckodriver.exe
+jp2a_py.py
+loginguide.txt
+
+
